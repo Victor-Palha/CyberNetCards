@@ -1,5 +1,10 @@
 import { contextBridge, ipcRenderer } from 'electron'
-import {CreateUserResponse, CreateUserRequest, SignInRequest, SignInResponse} from '../shared/types/ipc'
+import {
+  CreateUserResponse, 
+  CreateUserRequest, 
+  SignInRequest, 
+  SignInResponse, 
+  MyDecksResponse} from '../shared/types/ipc'
 import { ElectronAPI, electronAPI } from '@electron-toolkit/preload'
 import { IPC } from '../shared/constants/ipc'
 
@@ -20,6 +25,12 @@ const api = {
   },
   getPlayerInfo(): Promise<SignInResponse> {
     return ipcRenderer.invoke(IPC.USERS.GET_INFO)
+  },
+  getMyDecks(): Promise<MyDecksResponse[]>{
+    return ipcRenderer.invoke(IPC.DECKS.MY_DECKS)
+  },
+  deleteDeck(id: string): Promise<void>{
+    return ipcRenderer.invoke(IPC.DECKS.DELETE, id)
   }
 }
 

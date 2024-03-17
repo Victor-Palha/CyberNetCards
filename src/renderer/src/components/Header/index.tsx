@@ -17,7 +17,7 @@ export function Header(){
             <Link to={"/"} className="text-4xl cyberpunk-font">CNT</Link>
 
             <Link to="/confront/rooms" className="cyber-button-small fg-white vt-bot z-10">
-                    <h1 className="cyberpunk-font text-red">Confronto</h1>
+                    <h1 className="cyberpunk-font text-red-strong">Confronto</h1>
                     <span className="glitchtext"></span>
                     <span className="tag">3023</span>
             </Link>

@@ -17,6 +17,13 @@ export interface SignInResponse {
     token: string
 }
 
+export interface MyDecksResponse {
+    avatar_id: string,
+    id_deck: string,
+    name: string,
+    player_id: string
+}
+
 type PlayerInformation = {
     id_player: string,
     username: string,

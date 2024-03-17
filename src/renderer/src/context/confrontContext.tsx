@@ -34,11 +34,8 @@ export function ConfrontProvider({children}: ConfrontProviderProps){
     const [socket, setSocket] = useState<Socket | undefined>()
     const [player, setPlayer] = useState<Player>()
 
-    function getPlayerInformation(){
-        let player = localStorage.getItem('@player:cnt') as any
-        console.log(player)
-        player = player ? JSON.parse(player) as Player : null
-
+    async function getPlayerInformation(){
+        const {player} = await window.api.getPlayerInfo()
         setPlayer(player)
     }
     
