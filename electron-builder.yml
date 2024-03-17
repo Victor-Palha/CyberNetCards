@@ -1,5 +1,5 @@
 appId: com.electron.app
-productName: cybernetcards
+productName: CyberNetCards
 directories:
   buildResources: build
 files:
@@ -12,7 +12,7 @@ files:
 asarUnpack:
   - resources/**
 win:
-  executableName: cybernetcards
+  executableName: CyberNetCards
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}
