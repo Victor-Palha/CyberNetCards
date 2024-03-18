@@ -52,7 +52,7 @@ export interface UpdateDeckRequest{
     avatar_id: string
 }
 
-type PlayerInformation = {
+export type PlayerInformation = {
     id_player: string,
     username: string,
     email: string

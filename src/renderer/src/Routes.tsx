@@ -9,6 +9,7 @@ import { EditDeck } from './Screens/Deck/EditDeck'
 import { ConfrontProvider } from './context/confrontContext'
 import { Rooms } from './Screens/Rooms'
 import { ConfrontRoom } from './Screens/ConfrontRoom'
+import { Game } from './Screens/Game'
 
 export function AppRoutes() {
   return (
@@ -31,6 +32,9 @@ export function AppRoutes() {
             <ConfrontProvider>
                 <ConfrontRoom/>
             </ConfrontProvider>
+          }/>
+          <Route path="/confront/:room_id/:deck_id/game" element={
+              <Game/>
           }/>
         </>
       }
