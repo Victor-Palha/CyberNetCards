@@ -6,6 +6,12 @@ export const IPC = {
     },
     DECKS: {
         MY_DECKS: "decks: my decks",
-        DELETE: "decks: delete"
+        DELETE: "decks: delete",
+        CREATE: "decks: create",
+        FETCH_DECK: "decks: fetch deck",
+        UPDATE_DECK: "decks: update deck"
+    },
+    CARDS: {
+        FETCH_CARDS: "cards: fetch cards",
     }
 }

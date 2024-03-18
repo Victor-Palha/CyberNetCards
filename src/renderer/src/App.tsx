@@ -1,8 +1,8 @@
 import { ToastContainer } from "react-toastify"
 import { AppRoutes } from "./Routes"
+import { AuthProvider } from "./context/authContext";
 import 'react-toastify/dist/ReactToastify.css';
 import "./styles/globals.css"
-import { AuthProvider } from "./context/authContext";
 
 export function App(): JSX.Element {
   return (
@@ -21,6 +21,6 @@ export function App(): JSX.Element {
           pauseOnHover
           theme="colored"
       />
-      </AuthProvider>
+    </AuthProvider>
   )
 }

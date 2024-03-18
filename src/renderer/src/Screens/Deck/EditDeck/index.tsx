@@ -2,21 +2,14 @@ import { useEffect, useState } from "react";
 import { Header } from "../../../components/Header";
 import { CardModel, CardsProps } from "../../../components/Card";
 import { AvatarModel, AvatarsProps } from "../../../components/Avatar";
-import instance from "../../../lib/axios";
 import { useParams } from "react-router-dom";
-
-interface Deck{
-    id_deck: string,
-    deck_name: string,
-    cards: CardsProps[],
-    avatar: AvatarsProps
-}
 
 export function EditDeck(){
     const {deck_id} = useParams()
-    const [loading, setLoading] = useState(false)
+    
+    const [isLoadingCards, setIsLoadingCards] = useState(false)
     // Search
-    const [search, setSearch] = useState("")
+    const [searchCards, setSearchCards] = useState("")
     const [cards, setCards] = useState<CardsProps[]>([])
     const [avatars, setAvatars] = useState<AvatarsProps[]>([])
     // My Deck
@@ -28,30 +21,19 @@ export function EditDeck(){
     const [avatarInfo, setAvatarInfo] = useState<AvatarsProps | undefined>(undefined)
     // Fetch Cards
     async function FetchCards(){
-        const response = await instance.get("/api/card", {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem("@token:cnt")}`
-            },
-            params: {
-                search
-            }
-        })
-
-        setCards(response.data.cards)
-        setAvatars(response.data.avatars)
+        const {avatars, cards} = await window.api.fetchCards(searchCards)
+        setCards(cards)
+        setAvatars(avatars)
     }
-    async function FetchDeck(id: string){
-        if(!id) return
-        const response = await instance.get(`/api/deck/${id}`, {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem("@token:cnt")}`
-            }
-        })
 
-        const deck: Deck = response.data.deck
-        setCardsSelected(deck.cards)
-        setAvatarSelected(deck.avatar)
-        setDeckName(deck.deck_name)
+    async function FetchDeck(id: string){
+        if(!id) {
+            return alert("Deck não encontrado")
+        }
+        const {avatar, cards, deck_name} = await window.api.fetchDeck(id)
+        setCardsSelected(cards)
+        setAvatarSelected(avatar)
+        setDeckName(deck_name)
     }
     // Info Card
     function handleInfoCards(cards: CardsProps | null, avatar: AvatarsProps | null){
@@ -106,7 +88,6 @@ export function EditDeck(){
         }
 
         setCardsSelected(otherCards)
-        // setCardsSelected(cardsSelected.filter((cardSelected)=>cardSelected.id_card !== card.id_card))
     }
     // Add and remove Avatar
     function addAvatarToDeck(e:React.MouseEvent<HTMLDivElement, globalThis.MouseEvent>, avatar: AvatarsProps){
@@ -131,14 +112,8 @@ export function EditDeck(){
             deck_name: deckName,
             cards: cardsSelected.map((card)=>card.id_card)
         }
-
-        
         try {
-            await instance.patch("/api/deck", deck, {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("@token:cnt")}`
-                }
-            })
+            await window.api.updateDeck(deck)
             alert("Deck Atualizado com sucesso!")
         } catch (error) {
             alert("Erro ao atualizar deck")
@@ -147,22 +122,23 @@ export function EditDeck(){
 
 
     useEffect(()=>{
-        setLoading(true)
+        setIsLoadingCards(true)
         FetchCards()
-        setLoading(false)
-    }, [search])
+        setIsLoadingCards(false)
+    }, [searchCards])
+
     useEffect(()=>{
-        setLoading(true)
+        setIsLoadingCards(true)
         FetchDeck(deck_id as string)
-        setLoading(false)  
+        setIsLoadingCards(false)  
     },[])
     return (
         <>
             <Header/>
-            {!loading && (
+            {!isLoadingCards && (
             <div className="grid grid-cols-3 gap-2">
-                                {/* Cards info */}
-                                <div>
+                {/* Cards info */}
+                <div>
                     <div className="cyber-tile-big bg-gray-900">
                         {cardInfo && (
                             <>
@@ -203,8 +179,10 @@ export function EditDeck(){
                 <form onSubmit={(e)=>makeDeck(e)} className="bg-gray-900 cyber-tile-big pt-4">
                     <div className="flex items-center mb-10 flex-wrap justify-center">
                         {avatarSelected && (
-                            <button className={"cyber-button-small"} disabled={deckName === ""}>
-                                Salvar deck
+                            <button className={"cyber-button-small vt-bot z-10"} disabled={deckName === ""}>
+                                <span className="text-black font-bold">
+                                    Salvar deck
+                                </span>
                                 <span className="glitchtext"></span>
                             </button>
                         )}
@@ -243,8 +221,8 @@ export function EditDeck(){
                     <h1 className="cyber-h">Cartas</h1>
                     <form className="cyber-input my-4">
                         <input type="search" placeholder="Pesquisar cartas"
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
+                            value={searchCards}
+                            onChange={(e) => setSearchCards(e.target.value)}
                         />
                     </form>
                     <div className="flex flex-wrap gap-2">

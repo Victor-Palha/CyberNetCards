@@ -1,3 +1,6 @@
+import { AvatarsProps } from "~/src/renderer/src/components/Avatar"
+import { CardsProps } from "~/src/renderer/src/components/Card"
+
 export interface CreateUserRequest {
     username: string
     email: string
@@ -22,6 +25,31 @@ export interface MyDecksResponse {
     id_deck: string,
     name: string,
     player_id: string
+}
+
+export interface FetchCardsResponse {
+    cards: CardsProps[]
+    avatars: AvatarsProps[]
+}
+
+export interface CreateDeckRequest {
+    deck_name: string
+    avatar_id: string
+    cards: string[]
+}
+
+export interface FetchDeckResponse {
+    id_deck: string,
+    deck_name: string,
+    cards: CardsProps[],
+    avatar: AvatarsProps
+}
+
+export interface UpdateDeckRequest{
+    deck_id: string,
+    deck_name: string,
+    cards: string[],
+    avatar_id: string
 }
 
 type PlayerInformation = {

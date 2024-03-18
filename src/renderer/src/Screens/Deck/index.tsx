@@ -16,7 +16,7 @@ export function Deck(){
     }
 
     async function handleDeleteDeck(id_deck: string){
-        if(!window.confirm("Tem certeza que deseja deletar este deck?"))return
+        if(!window.confirm("Tem certeza que deseja deletar este deck?")) return
         await window.api.deleteDeck(id_deck)
         toast.success("Deck deletado com sucesso!")
         fetchMyDecks()
@@ -25,6 +25,7 @@ export function Deck(){
     useEffect(()=>{
         fetchMyDecks()
     }, [])
+
     return (
         <>
             <Header/>
@@ -45,6 +46,7 @@ export function Deck(){
                                     <p>{deck.name}</p>
                                 </div>
                             </Link>
+
                             <button className="w-full items-center flex justify-center group" onClick={()=>handleDeleteDeck(deck.id_deck)}>
                                 <TbHttpDelete size={25} className="group-hover:text-red transition"/>
                             </button>

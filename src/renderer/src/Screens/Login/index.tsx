@@ -1,11 +1,9 @@
-import { useContext, useState } from 'react'
-import { FieldValues, useForm } from 'react-hook-form'
-// import instance from '../../lib/axios'
+import { useContext } from 'react'
+import { useForm } from 'react-hook-form'
 import { Link, Navigate } from 'react-router-dom'
 import { authContext } from '../../context/authContext'
 import { SignInRequest } from '~/src/shared/types/ipc'
 import { toast } from 'react-toastify'
-// import { authContext } from '../../context/authContext'
 
 export function Login() {
   const {isAuth, setIsAuth} = useContext(authContext)

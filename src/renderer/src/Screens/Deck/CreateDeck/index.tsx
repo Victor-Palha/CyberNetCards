@@ -1,18 +1,13 @@
 import { useEffect, useState } from "react"
 import { MagicMotion } from "react-magic-motion"
 import { Header } from "../../../components/Header"
-import instance from "../../../lib/axios"
 import { CardModel, CardsProps } from "../../../components/Card"
 import { AvatarModel, AvatarsProps } from "../../../components/Avatar"
-
-interface MyDeck{
-    deck_name: string,
-    avatar_id: string,
-    cards: string[],
-}
+import { CreateDeckRequest } from "~/src/shared/types/ipc"
+import { toast } from "react-toastify"
 
 export function CreateDeck(){
-    const [search, setSearch] = useState("")
+    const [searchCards, setSearchCards] = useState("")
     const [cards, setCards] = useState<CardsProps[]>([])
     const [avatars, setAvatars] = useState<AvatarsProps[]>([])
 
@@ -36,36 +31,29 @@ export function CreateDeck(){
     }
 
     async function FetchCards(){
-        const response = await instance.get("/api/card", {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem("@token:cnt")}`
-            },
-            params: {
-                search
-            }
-        })
+        const {avatars, cards} = await window.api.fetchCards(searchCards)
 
-        setCards(response.data.cards)
-        setAvatars(response.data.avatars)
+        setCards(cards)
+        setAvatars(avatars)
     }
 
     function addCardToDeck(e:React.MouseEvent<HTMLDivElement, globalThis.MouseEvent>, card: CardsProps){
         e.preventDefault()
         // Só pode adicionar o máximo de 3 copias de uma carta
         if(card.type_card === "HABILIDADE_UNICA"){
-            const thisCardIsAlreadyInTheDeck = cardsSelected.filter((cardSelected)=>cardSelected.id_card === card.id_card)
+            const thisCardIsAlreadyInTheDeck = cardsSelected.filter((cardSelected)=> cardSelected.id_card === card.id_card)
             if(thisCardIsAlreadyInTheDeck.length > 0){
-                alert("Você só pode adicionar uma copia de uma carta de habilidade única")
+                toast.warn("Você só pode adicionar uma copia de uma carta de habilidade única")
                 return
             }
         }
         if(cardsSelected.length === 22){
-            alert("Seu deck só pode ter 22 cartas")
+            toast.warn("Seu deck só pode ter 22 cartas")
             return
         }
         const cardsRepeat = cardsSelected.filter((cardSelected)=>cardSelected.id_card === card.id_card)
         if(cardsRepeat.length >= 3){
-            alert("Você só pode adicionar 3 copias de uma carta")
+            toast.warn("Você só pode adicionar 3 copias de uma carta")
             return
         }else{
             setCardsSelected([...cardsSelected, card])
@@ -80,7 +68,7 @@ export function CreateDeck(){
 
 
         if(cardsRemove.length === 0){
-            alert("Você não pode remover uma carta que não existe")
+            toast.warn("Você não pode remover uma carta que não existe")
             return
         }
         let counterCards = cardsRemove.length
@@ -90,44 +78,39 @@ export function CreateDeck(){
         }
 
         setCardsSelected(otherCards)
-        // setCardsSelected(cardsSelected.filter((cardSelected)=>cardSelected.id_card !== card.id_card))
     }
+
     function addAvatarToDeck(e:React.MouseEvent<HTMLDivElement, globalThis.MouseEvent>, avatar: AvatarsProps){
         e.preventDefault()
         setAvatarSelected(avatar)
     }
+
     function removeAvatarFromDeck(e:React.MouseEvent<HTMLDivElement, globalThis.MouseEvent>, avatar:AvatarsProps){
         e.preventDefault()
-        console.log(avatar)
         setAvatarSelected(undefined)
     }
-    async function makeDeck(e: React.FormEvent<HTMLFormElement>){
+    async function handleCreateDeck(e: React.FormEvent<HTMLFormElement>){
         e.preventDefault()
         if(cardsSelected.length < 12){
             alert("Seu deck precisa ter no mínimo 12 cartas")
             return
         }
-        const deck: MyDeck = {
+        const deck: CreateDeckRequest = {
             avatar_id: avatarSelected?.id_avatar || "",
             deck_name: deckName,
             cards: cardsSelected.map((card)=>card.id_card)
         }
-
-        
         try {
-            await instance.post("/api/deck", deck, {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("@token:cnt")}`
-                }
-            })
+            await window.api.createDeck(deck)
             alert("Deck criado com sucesso!")
         } catch (error) {
             alert("Erro ao criar deck")
         }
     }
+
     useEffect(()=>{
         FetchCards()
-    }, [search])
+    }, [searchCards])
     return (
         <>
             <Header/>
@@ -171,11 +154,13 @@ export function CreateDeck(){
                 </div>
                 {/* Cards to create Deck */}
                 <MagicMotion>
-                <form onSubmit={(e)=>makeDeck(e)} className="bg-gray-900 cyber-tile-big pt-4">
+                <form onSubmit={(e)=>handleCreateDeck(e)} className="bg-gray-900 cyber-tile-big pt-4">
                     <div className="flex items-center mb-10 flex-wrap justify-center">
                         {avatarSelected && (
-                            <button className={"cyber-button-small"} disabled={deckName === ""}>
-                                Salvar deck
+                            <button className={"cyber-button-small vt-bot z-10"} disabled={deckName === ""}>
+                                <span className="text-black font-bold">
+                                    Salvar deck
+                                </span>
                                 <span className="glitchtext"></span>
                             </button>
                         )}
@@ -214,8 +199,8 @@ export function CreateDeck(){
                     <h1 className="cyber-h">Cartas</h1>
                     <form className="cyber-input my-4">
                         <input type="search" placeholder="Pesquisar cartas"
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
+                            value={searchCards}
+                            onChange={(e) => setSearchCards(e.target.value)}
                         />
                     </form>
                     <div className="flex flex-wrap gap-2">

@@ -4,7 +4,11 @@ import {
   CreateUserRequest, 
   SignInRequest, 
   SignInResponse, 
-  MyDecksResponse} from '../shared/types/ipc'
+  MyDecksResponse,
+  FetchCardsResponse,
+  CreateDeckRequest,
+  FetchDeckResponse,
+  UpdateDeckRequest} from '../shared/types/ipc'
 import { ElectronAPI, electronAPI } from '@electron-toolkit/preload'
 import { IPC } from '../shared/constants/ipc'
 
@@ -31,6 +35,18 @@ const api = {
   },
   deleteDeck(id: string): Promise<void>{
     return ipcRenderer.invoke(IPC.DECKS.DELETE, id)
+  },
+  fetchCards(search: string): Promise<FetchCardsResponse>{
+    return ipcRenderer.invoke(IPC.CARDS.FETCH_CARDS, search)
+  },
+  createDeck(req: CreateDeckRequest): Promise<void>{
+    return ipcRenderer.invoke(IPC.DECKS.CREATE, req)
+  },
+  fetchDeck(id: string): Promise<FetchDeckResponse>{
+    return ipcRenderer.invoke(IPC.DECKS.FETCH_DECK, id)
+  },
+  updateDeck(req: UpdateDeckRequest): Promise<void>{
+    return ipcRenderer.invoke(IPC.DECKS.UPDATE_DECK, req)
   }
 }
 

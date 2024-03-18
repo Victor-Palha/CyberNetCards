@@ -19,6 +19,7 @@ export function SignUp(){
     }
 
     const {register, handleSubmit, reset} = useForm<CreateUserRequest>()
+    
     return (
         <div className='flex h-screen justify-center items-center'>
         <form className='max-w-md flex flex-col gap-4 text-white'
