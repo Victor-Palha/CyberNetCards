@@ -1,7 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 import { Socket, io } from "socket.io-client";
 import { Player } from "./authContext";
-import { env } from "~/src/shared/constants/config";
+import { env } from "../../../shared/constants/config";
 
 export type PrepareRoom = {
     room_id: string;
