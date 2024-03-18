@@ -1,10 +1,11 @@
 import "./ipc"
 import "./store"
 import { app, shell, BrowserWindow, ipcMain } from 'electron'
-import { join } from 'path'
+import { join } from 'node:path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { createFileRoute, createURLRoute } from 'electron-router-dom'
-import icon from '../../resources/icon.png'
+// import icon from '../../resources/icon.png'
+const icon = join(__dirname, '../../resources/icon.png')
 
 function createWindow(): void {
   // Create the browser window.

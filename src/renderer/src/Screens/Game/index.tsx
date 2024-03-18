@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import { toast } from "react-toastify"
 import { MyField } from "./MyField"
 import { OponentField } from "./OponentField"
@@ -29,7 +29,7 @@ type AvatarProps = {
 }
 
 export function Game(){
-
+    const navigate = useNavigate()
     // Core information
     const [socket, setSocket] = useState<Socket | undefined>()
     const [Me, setMe] = useState<PlayerInformation>({} as PlayerInformation)
@@ -260,6 +260,11 @@ export function Game(){
           });
     }
 
+    function handleSurrender(){
+        if(!window.confirm("Você deseja se render?")) return
+        socket && socket.emit("surrender", {room_id, player_id: Me.id_player})
+    }
+
     useEffect(()=>{        
         socket && socket.emit("init_Game", {
             room_id,
@@ -319,6 +324,14 @@ export function Game(){
                 }
             }
         })
+        .on("enemy_Surrended", (data)=> {
+            if(data.winner === Me.id_player){
+                toast.success(data.message)
+                setTimeout(()=> {
+                    navigate("/")
+                }, 3000)
+            }
+        })
     }, [socket])
 
     useEffect(()=>{
@@ -331,7 +344,7 @@ export function Game(){
 
     return (
         <main>
-            <button className="cyber-button-small bg-red fg-white vt-bot z-10 absolute">
+            <button className="cyber-button-small bg-red fg-white vt-bot z-10 absolute" onClick={handleSurrender}>
                     <p>Render-se</p>
                     <span className="glitchtext">Fracote</span>
                     <span className="tag">3023</span>
