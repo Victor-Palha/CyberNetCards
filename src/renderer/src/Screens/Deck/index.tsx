@@ -39,7 +39,7 @@ export function Deck(){
                     </Link>
                 <div className="flex cyber-tile-big w-full p-4 gap-2 flex-wrap justify-center items-center">
                     {myDecks.map((deck)=>(
-                        <div>
+                        <div key={deck.id_deck}>
                             <Link to={"/deck/"+deck.id_deck} key={deck.id_deck}>
                                 <div className="cyber-tile-small cyber-glitch-1 bg-black flex justify-center items-center text-white flex-col border-yellow-400 border-2">
                                     <TbCardsFilled className="w-10 h-10 text-blue-500"/>
@@ -48,7 +48,7 @@ export function Deck(){
                             </Link>
 
                             <button className="w-full items-center flex justify-center group" onClick={()=>handleDeleteDeck(deck.id_deck)}>
-                                <TbHttpDelete size={25} className="group-hover:text-red transition"/>
+                                <TbHttpDelete size={25} className="text-red-strong group-hover:scale-105 transition"/>
                             </button>
                         </div>
                     ))}

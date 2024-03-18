@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react"
 import { Navigate, useNavigate, useParams } from "react-router-dom"
 import { PrepareRoom, confrontContext } from "../../context/confrontContext"
 import { Player } from "../../context/authContext"
+import { toast } from "react-toastify"
 
 type MyDecks = {
     id_deck: string;
@@ -18,17 +19,17 @@ export function ConfrontRoom(){
     const [room, setRoom] = useState<PrepareRoom>({} as PrepareRoom)
     const [ready, setReady] = useState<boolean>(false)
     const [myDecks, setMyDecks] = useState<MyDecks[]>([])
-    const [message, setMessage] = useState<string>("")
+    const [sendMessage, setSendMessage] = useState<string>("")
     const [messages, setMessages] = useState<{playerName: string, message:string}[]>([])
     const [chooseDeck, setChooseDeck] = useState<string>("")
 
     const navigate = useNavigate()
 
-    function sendMessage(e: React.KeyboardEvent<HTMLTextAreaElement>){
+    function handleSendMessage(e: React.KeyboardEvent<HTMLTextAreaElement>){
         if(e.key === "Enter"){
             e.preventDefault()
-            socket && socket.emit("send_Message", {message, room_id})
-            setMessage("")
+            socket && socket.emit("send_Message", {message: sendMessage, room_id})
+            setSendMessage("")
         }
     }
 
@@ -54,7 +55,7 @@ export function ConfrontRoom(){
 
     function leaveRoom(){
         socket && socket.emit("leave_Room", room_id)
-        navigate("/confront/rooms")
+        navigate("/")
     }
 
     function startGame(){
@@ -65,11 +66,15 @@ export function ConfrontRoom(){
         handleGetUserInformation()
         socket && socket.emit("room_Info", room_id)
             .on("room_Info", (room: PrepareRoom)=>{
-                console.log(room)
                 setRoom(room)
                 setMessages(room.messages)
-            }).on("new_Message", (message)=>{
+            })
+            .on("new_Message", (message)=>{
+                console.log(message)
                 setMessages(message)
+            })
+            .on("players_not_ready", (message: string)=>{
+                toast.error(message)
             })
         handleDeck()
     }, [socket])
@@ -90,9 +95,9 @@ export function ConfrontRoom(){
                     </button>
                 </header>
                 {room.players && (
-                    <div className="grid grid-cols-2 h-[50vh]">
+                    <div className="grid grid-cols-2 h-[50vh] ">
                         <div className="p-10">
-                            <table className="cyber-table">
+                            <table className="cyber-table text-white ac-white">
                                 <thead>
                                     <tr>
                                         <th>Nome</th>
@@ -111,7 +116,7 @@ export function ConfrontRoom(){
                                 </tbody>
                             </table>
                         </div>
-                        <div>
+                        <div className="text-white">
                             <h3 className="cyber-h">
                                 Configurações
                             </h3>
@@ -119,9 +124,9 @@ export function ConfrontRoom(){
                                 <select onChange={(e)=>{
                                     handleChooseDeck(e.target.value)
                                 }}>
-                                    <option value="">Selecione um deck</option>
+                                    <option className="text-black" value="">Selecione um deck</option>
                                     {myDecks && myDecks.map((deck, index) => (
-                                        <option key={index} value={deck.id_deck}>{deck.name}</option>
+                                        <option key={index} className="text-black" value={deck.id_deck}>{deck.name}</option>
                                     ))}
                                 </select>
                             </div>
@@ -146,22 +151,22 @@ export function ConfrontRoom(){
                 )}
                 <div className="cyber-razor-top bg-black bottom-0 left-0">
                     
-                    <div className="w-full code-block h-[200px] overflow-scroll first:text-red-500 cyber-glitch-2">
+                    <div className="w-full h-[120px] code-block overflow-y-scroll first:text-red-500 cyber-glitch-2">
                         {messages && messages.map((message, index) => (
                             <div 
                                 className={"flex " + (message.playerName === player.username && "text-white")}
                                 key={index}
                             >
                                 <p></p>
-                                <p><span className="font-bold italic text-[16px] mr-2">{message.playerName}$</span> {message.message}</p>
+                                <p><span className="font-bold italic text-[12px] mr-2">{message.playerName}$</span> {message.message}</p>
                             </div>
                         ))}
                     </div>
                 
                     <textarea
-                        value={message}
-                        onChange={(e)=>setMessage(e.target.value)}
-                        onKeyDown={(e)=>sendMessage(e)}
+                        value={sendMessage}
+                        onChange={(e)=>setSendMessage(e.target.value)}
+                        onKeyDown={(e)=>handleSendMessage(e)}
                         className="w-full min-h-[10vh] max-h-[10vh] bg-gray-800 focus:outline-none p-4 text-white"
                     />
                 </div>

@@ -54,7 +54,7 @@ export function Rooms(){
             </header>
             <div className=" grid grid-cols-2 ">
                 <div className="p-4">
-                    <table className="cyber-table cyber-style-2">
+                    <table className="cyber-table cyber-style-2 text-white ac-white">
                         <thead>
                             <tr>
                                 <th>No.</th>
